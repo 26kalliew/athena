@@ -1,17 +1,8 @@
-'use client'
-
-import { useEffect, useState } from 'react'
 import Link from 'next/link'
-import { getNotes, type Note } from '@/lib/storage'
+import { listNotes } from './actions'
 
-export default function NotesPage() {
-  const [notes, setNotes] = useState<Note[]>([])
-  const [loaded, setLoaded] = useState(false)
-
-  useEffect(() => {
-    setNotes(getNotes())
-    setLoaded(true)
-  }, [])
+export default async function NotesPage() {
+  const notes = await listNotes()
 
   return (
     <main className="mx-auto max-w-2xl px-4 py-12">
@@ -25,7 +16,7 @@ export default function NotesPage() {
         </Link>
       </div>
 
-      {loaded && notes.length === 0 && (
+      {notes.length === 0 && (
         <p className="text-sm text-zinc-400">No notes yet.</p>
       )}
 

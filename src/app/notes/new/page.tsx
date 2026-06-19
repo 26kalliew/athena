@@ -3,21 +3,17 @@
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
-import { saveNote } from '@/lib/storage'
+import { createNote } from '@/app/notes/actions'
 
 export default function NewNotePage() {
   const router = useRouter()
   const [title, setTitle] = useState('')
   const [body, setBody] = useState('')
+  const [saving, setSaving] = useState(false)
 
-  function handleSave() {
-    const note = {
-      id: crypto.randomUUID(),
-      title: title.trim(),
-      body: body.trim(),
-      createdAt: new Date().toISOString(),
-    }
-    saveNote(note)
+  async function handleSave() {
+    setSaving(true)
+    const note = await createNote({ title: title.trim(), body: body.trim() })
     router.push(`/notes/${note.id}`)
   }
 
@@ -49,10 +45,10 @@ export default function NewNotePage() {
         <div className="flex justify-end">
           <button
             onClick={handleSave}
-            disabled={!title.trim()}
+            disabled={!title.trim() || saving}
             className="rounded-lg bg-foreground px-4 py-2 text-sm font-medium text-background hover:opacity-80 disabled:opacity-40"
           >
-            Save
+            {saving ? 'Saving…' : 'Save'}
           </button>
         </div>
       </div>

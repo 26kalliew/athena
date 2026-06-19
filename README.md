@@ -1,5 +1,31 @@
 This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
 
+## Database (Drizzle + Neon Postgres)
+
+Add your Neon connection string to `.env.local`:
+
+```
+DATABASE_URL=postgres://...
+```
+
+| Command | What it does |
+|---|---|
+| `npm run db:generate` | Diff the schema and write a new SQL migration to `./drizzle` |
+| `npm run db:migrate` | Apply all pending migrations to the database |
+| `npm run db:studio` | Open Drizzle Studio (local DB browser) |
+
+**First-time setup:**
+```bash
+npm run db:generate   # creates drizzle/0000_*.sql
+npm run db:migrate    # applies it to your Neon DB
+```
+
+After changing `src/db/schema.ts`, re-run `db:generate` then `db:migrate`.
+
+> `db:migrate` and `db:studio` use `node --env-file=.env.local` to load the connection string. Requires Node 20.6+.
+
+---
+
 ## Getting Started
 
 First, run the development server:
