@@ -46,6 +46,16 @@ test.describe('new note page — input caps', () => {
   })
 })
 
+// Fix 10 — global error boundary
+test.describe('global error boundary', () => {
+  test('renders friendly error UI when a server component throws', async ({ page }) => {
+    await page.goto('/test-fixtures/error-boundary')
+    await expect(page.getByRole('heading', { name: 'Something went wrong' })).toBeVisible({ timeout: 5000 })
+    await expect(page.getByRole('button', { name: 'Try again' })).toBeVisible()
+    await expect(page.getByRole('link', { name: 'Go back' })).toBeVisible()
+  })
+})
+
 // Fix 9 — Regenerate button with confirmation dialog
 test.describe('generate button — regenerate with confirmation', () => {
   test('shows Practice and Regenerate when cards exist', async ({ page }) => {
