@@ -4,6 +4,8 @@ import { useState } from 'react'
 import Link from 'next/link'
 import { recordReview } from '@/app/flashcards/actions'
 import type { Flashcard } from '@/app/flashcards/actions'
+import { Button } from '@/components/ui/button'
+import { Card, CardContent } from '@/components/ui/card'
 
 export default function PracticeMode({
   cards,
@@ -35,12 +37,9 @@ export default function PracticeMode({
         <p className="mb-8 text-zinc-500">
           {got} / {cards.length} correct
         </p>
-        <Link
-          href={`/notes/${noteId}`}
-          className="rounded-lg bg-foreground px-4 py-2 text-sm font-medium text-background hover:opacity-80"
-        >
-          Back to note
-        </Link>
+        <Button asChild>
+          <Link href={`/notes/${noteId}`}>Back to note</Link>
+        </Button>
       </main>
     )
   }
@@ -63,12 +62,14 @@ export default function PracticeMode({
         <span className="text-sm text-zinc-400">{index + 1} / {cards.length}</span>
       </div>
 
-      <div
+      <Card
         onClick={() => !flipped && setFlipped(true)}
-        className="flex min-h-48 cursor-pointer items-center justify-center rounded-xl border border-zinc-200 bg-white p-8 text-center dark:border-zinc-800 dark:bg-zinc-900"
+        className="min-h-48 cursor-pointer justify-center"
       >
-        <p className="text-lg">{flipped ? card.back : card.front}</p>
-      </div>
+        <CardContent className="text-center">
+          <p className="text-lg">{flipped ? card.back : card.front}</p>
+        </CardContent>
+      </Card>
 
       {!flipped && (
         <p className="mt-4 text-center text-sm text-zinc-400">Click card to reveal answer</p>
@@ -76,18 +77,12 @@ export default function PracticeMode({
 
       {flipped && (
         <div className="mt-6 flex justify-center gap-4">
-          <button
-            onClick={() => mark('missed')}
-            className="rounded-lg border border-zinc-200 px-6 py-2 text-sm font-medium hover:bg-zinc-50 dark:border-zinc-700 dark:hover:bg-zinc-800"
-          >
+          <Button variant="outline" onClick={() => mark('missed')}>
             Missed
-          </button>
-          <button
-            onClick={() => mark('got')}
-            className="rounded-lg bg-foreground px-6 py-2 text-sm font-medium text-background hover:opacity-80"
-          >
+          </Button>
+          <Button onClick={() => mark('got')}>
             Got it
-          </button>
+          </Button>
         </div>
       )}
     </main>
