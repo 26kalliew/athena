@@ -1,7 +1,7 @@
 # FIXES.md — Prioritised bug/UX fixes for Athena; checked off as each is completed.
 
 - [x] **1. `src/app/notes/new/page.tsx` — wrap `createNote` in try/catch, call `toast.error(...)`, and reset `setSaving(false)` on failure so the button doesn't lock permanently when the API call fails**
-- [ ] **2. `src/app/notes/[id]/ChatPanel.tsx` — destructure `error` from `useChat` and fire `toast.error(error.message)` in a `useEffect` so streaming failures are visible instead of silently swallowed**
+- [x] **2. `src/app/notes/[id]/ChatPanel.tsx` — destructure `error` from `useChat` and fire `toast.error(error.message)` in a `useEffect` so streaming failures are visible instead of silently swallowed**
 - [ ] **3. `src/app/notes/new/page.tsx` — add `disabled={saving}` to `<Input>` and `<Textarea>` so both fields lock during save and prevent mid-flight edits**
 - [ ] **4. `src/app/notes/page.tsx` — add `truncate` class to the note title `<p>` so long titles don't wrap and break the list-row layout**
 - [ ] **5. `src/app/notes/loading.tsx` (new file) — add a Skeleton loading UI for the note list so users see a placeholder instead of a blank page during server-side data fetching**

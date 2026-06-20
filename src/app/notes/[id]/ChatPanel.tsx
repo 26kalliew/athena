@@ -3,6 +3,9 @@
 import { useState, useEffect, useRef, useMemo } from 'react'
 import { useChat } from '@ai-sdk/react'
 import { DefaultChatTransport, type UIMessage } from 'ai'
+import { toast } from 'sonner'
+import { Button } from '@/components/ui/button'
+import { Input } from '@/components/ui/input'
 
 export default function ChatPanel({
   noteId,
@@ -19,7 +22,7 @@ export default function ChatPanel({
     [noteId],
   )
 
-  const { messages, sendMessage, stop, status } = useChat({
+  const { messages, sendMessage, stop, status, error } = useChat({
     transport,
     messages: initialMessages,
   })
@@ -29,6 +32,10 @@ export default function ChatPanel({
   useEffect(() => {
     bottomRef.current?.scrollIntoView({ behavior: 'smooth' })
   }, [messages])
+
+  useEffect(() => {
+    if (error) toast.error(error.message || 'Something went wrong with the chat')
+  }, [error])
 
   function handleSubmit(e: React.FormEvent) {
     e.preventDefault()
@@ -70,29 +77,21 @@ export default function ChatPanel({
       </div>
 
       <form onSubmit={handleSubmit} className="flex gap-2">
-        <input
+        <Input
           value={input}
           onChange={e => setInput(e.target.value)}
           placeholder="Ask about this note…"
           disabled={isActive}
-          className="flex-1 rounded-lg border border-zinc-200 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-zinc-300 disabled:opacity-50 dark:border-zinc-700 dark:bg-zinc-900 dark:focus:ring-zinc-600"
+          className="flex-1"
         />
         {isActive ? (
-          <button
-            type="button"
-            onClick={stop}
-            className="rounded-lg border border-zinc-200 px-4 py-2 text-sm hover:bg-zinc-50 dark:border-zinc-700 dark:hover:bg-zinc-800"
-          >
+          <Button type="button" variant="outline" onClick={stop}>
             Stop
-          </button>
+          </Button>
         ) : (
-          <button
-            type="submit"
-            disabled={!input.trim()}
-            className="rounded-lg bg-foreground px-4 py-2 text-sm font-medium text-background hover:opacity-80 disabled:opacity-40"
-          >
+          <Button type="submit" disabled={!input.trim()}>
             Send
-          </button>
+          </Button>
         )}
       </form>
     </div>

@@ -24,3 +24,30 @@ test.describe('new note page — save error handling', () => {
     await expect(page.locator('[data-sonner-toast]')).toBeVisible({ timeout: 8000 })
   })
 })
+
+// Fix 2 — ChatPanel silent streaming errors
+test.describe('chat panel — error handling', () => {
+  test('shows a toast when the chat API returns an error', async ({ page }) => {
+    // Create a real note so we land on a page with a ChatPanel
+    await page.goto('/notes/new')
+    await page.getByPlaceholder('Title').fill('Chat Error Test')
+    await page.getByPlaceholder('Paste your notes here…').fill('Test content.')
+    await page.getByRole('button', { name: 'Save' }).click()
+    await page.waitForURL(/\/notes\/[^/]+$/, { timeout: 10000 })
+
+    // Intercept the chat streaming endpoint
+    await page.route('**/api/chat', async route => {
+      if (route.request().method() === 'POST') {
+        await route.fulfill({ status: 500, body: 'Service Unavailable' })
+      } else {
+        await route.continue()
+      }
+    })
+
+    await page.getByPlaceholder('Ask about this note…').fill('Hello?')
+    await page.getByRole('button', { name: 'Send' }).click()
+
+    // A sonner error toast must appear
+    await expect(page.locator('[data-sonner-toast]')).toBeVisible({ timeout: 8000 })
+  })
+})
