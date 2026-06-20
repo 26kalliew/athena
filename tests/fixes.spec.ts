@@ -25,6 +25,14 @@ test.describe('new note page — save error handling', () => {
   })
 })
 
+// Fix 7 — practice page 404 for unknown note IDs
+test.describe('practice page — unknown note ID', () => {
+  test('renders the not-found page for a non-existent note ID', async ({ page }) => {
+    await page.goto('/notes/00000000-0000-0000-0000-000000000000/practice')
+    await expect(page.getByText('This page could not be found')).toBeVisible({ timeout: 5000 })
+  })
+})
+
 // Fix 6 — notes/[id]/loading.tsx skeleton
 test.describe('note detail — loading skeleton', () => {
   test('renders skeleton sections instead of a blank page while loading', async ({ page }) => {
