@@ -1,8 +1,11 @@
 'use server'
 
 import { z } from 'zod'
+import { eq } from 'drizzle-orm'
 import { generateText } from 'ai'
 import { MODEL } from '@/lib/ai'
+import { db } from '@/db'
+import { chatMessages } from '@/db/schema'
 import { getNote } from '@/app/notes/actions'
 import { createFlashcards, type Flashcard } from '@/app/flashcards/actions'
 
@@ -63,5 +66,6 @@ export async function generateFlashcards(
     cards = await callAndParse(note.body, mode)
   }
 
+  await db.delete(chatMessages).where(eq(chatMessages.noteId, noteId))
   return createFlashcards(noteId, cards)
 }

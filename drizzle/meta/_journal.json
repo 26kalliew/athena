@@ -8,6 +8,13 @@
       "when": 1781849023459,
       "tag": "0000_futuristic_captain_universe",
       "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "7",
+      "when": 1781934531039,
+      "tag": "0001_nosy_mantis",
+      "breakpoints": true
     }
   ]
 }
