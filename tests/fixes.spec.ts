@@ -25,6 +25,27 @@ test.describe('new note page — save error handling', () => {
   })
 })
 
+// Fix 8 — title maxLength and body character counter
+test.describe('new note page — input caps', () => {
+  test('title is capped at 200 characters', async ({ page }) => {
+    await page.goto('/notes/new')
+    const input = page.getByPlaceholder('Title')
+    await input.fill('A'.repeat(250))
+    const value = await input.inputValue()
+    expect(value.length).toBeLessThanOrEqual(200)
+  })
+
+  test('body shows a character counter and caps at 20000', async ({ page }) => {
+    await page.goto('/notes/new')
+    const counter = page.getByText(/\/ 20,000/)
+    await expect(counter).toBeVisible()
+    const textarea = page.getByPlaceholder('Paste your notes here…')
+    await textarea.fill('B'.repeat(25000))
+    const value = await textarea.inputValue()
+    expect(value.length).toBeLessThanOrEqual(20000)
+  })
+})
+
 // Fix 7 — practice page 404 for unknown note IDs
 test.describe('practice page — unknown note ID', () => {
   test('renders the not-found page for a non-existent note ID', async ({ page }) => {

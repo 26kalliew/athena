@@ -43,14 +43,21 @@ export default function NewNotePage() {
           value={title}
           onChange={e => setTitle(e.target.value)}
           disabled={saving}
+          maxLength={200}
         />
-        <Textarea
-          placeholder="Paste your notes here…"
-          value={body}
-          onChange={e => setBody(e.target.value)}
-          rows={16}
-          disabled={saving}
-        />
+        <div>
+          <Textarea
+            placeholder="Paste your notes here…"
+            value={body}
+            onChange={e => setBody(e.target.value)}
+            rows={16}
+            disabled={saving}
+            maxLength={20000}
+          />
+          <p className="mt-1 text-right text-xs text-zinc-400">
+            {body.length.toLocaleString()} / 20,000
+          </p>
+        </div>
         <div className="flex justify-end">
           <Button onClick={handleSave} disabled={!title.trim() || saving}>
             {saving ? 'Saving…' : 'Save'}
