@@ -25,6 +25,17 @@ test.describe('new note page — save error handling', () => {
   })
 })
 
+// Fix 5 — notes/loading.tsx skeleton
+test.describe('notes list — loading skeleton', () => {
+  test('renders skeleton rows instead of a blank page while loading', async ({ page }) => {
+    await page.goto('/test-fixtures/notes-loading')
+    // Four skeleton list items must be present
+    await expect(page.locator('[data-slot="skeleton"]').first()).toBeVisible()
+    const count = await page.locator('li').count()
+    expect(count).toBe(4)
+  })
+})
+
 // Fix 4 — Long note titles truncate in the list
 test.describe('notes list — title truncation', () => {
   test('a very long title is truncated to a single line', async ({ page }) => {
