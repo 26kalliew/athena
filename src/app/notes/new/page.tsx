@@ -3,7 +3,11 @@
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
+import { toast } from 'sonner'
 import { createNote } from '@/app/notes/actions'
+import { Button } from '@/components/ui/button'
+import { Input } from '@/components/ui/input'
+import { Textarea } from '@/components/ui/textarea'
 
 export default function NewNotePage() {
   const router = useRouter()
@@ -13,8 +17,13 @@ export default function NewNotePage() {
 
   async function handleSave() {
     setSaving(true)
-    const note = await createNote({ title: title.trim(), body: body.trim() })
-    router.push(`/notes/${note.id}`)
+    try {
+      const note = await createNote({ title: title.trim(), body: body.trim() })
+      router.push(`/notes/${note.id}`)
+    } catch (e) {
+      toast.error(e instanceof Error ? e.message : 'Failed to save note')
+      setSaving(false)
+    }
   }
 
   return (
@@ -28,28 +37,24 @@ export default function NewNotePage() {
       <h1 className="mb-6 text-2xl font-semibold">New note</h1>
 
       <div className="space-y-4">
-        <input
+        <Input
           type="text"
           placeholder="Title"
           value={title}
           onChange={e => setTitle(e.target.value)}
-          className="w-full rounded-lg border border-zinc-200 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-zinc-300 dark:border-zinc-700 dark:bg-zinc-900 dark:focus:ring-zinc-600"
+          disabled={saving}
         />
-        <textarea
+        <Textarea
           placeholder="Paste your notes here…"
           value={body}
           onChange={e => setBody(e.target.value)}
           rows={16}
-          className="w-full rounded-lg border border-zinc-200 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-zinc-300 dark:border-zinc-700 dark:bg-zinc-900 dark:focus:ring-zinc-600"
+          disabled={saving}
         />
         <div className="flex justify-end">
-          <button
-            onClick={handleSave}
-            disabled={!title.trim() || saving}
-            className="rounded-lg bg-foreground px-4 py-2 text-sm font-medium text-background hover:opacity-80 disabled:opacity-40"
-          >
+          <Button onClick={handleSave} disabled={!title.trim() || saving}>
             {saving ? 'Saving…' : 'Save'}
-          </button>
+          </Button>
         </div>
       </div>
     </main>
