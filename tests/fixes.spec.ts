@@ -25,6 +25,16 @@ test.describe('new note page — save error handling', () => {
   })
 })
 
+// Fix 6 — notes/[id]/loading.tsx skeleton
+test.describe('note detail — loading skeleton', () => {
+  test('renders skeleton sections instead of a blank page while loading', async ({ page }) => {
+    await page.goto('/test-fixtures/note-loading')
+    await expect(page.locator('[data-slot="skeleton"]').first()).toBeVisible()
+    const count = await page.locator('[data-slot="skeleton"]').count()
+    expect(count).toBeGreaterThanOrEqual(6)
+  })
+})
+
 // Fix 5 — notes/loading.tsx skeleton
 test.describe('notes list — loading skeleton', () => {
   test('renders skeleton rows instead of a blank page while loading', async ({ page }) => {
