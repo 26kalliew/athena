@@ -25,6 +25,33 @@ test.describe('new note page — save error handling', () => {
   })
 })
 
+// Fix 3 — Input/Textarea lock during save
+test.describe('new note page — fields lock during save', () => {
+  test('title and body are disabled while saving', async ({ page }) => {
+    await page.goto('/notes/new')
+
+    // Hold the Server Action so we can inspect the in-flight state
+    let resolveHold!: () => void
+    await page.route('**/notes/new', async route => {
+      if (route.request().method() === 'POST') {
+        await new Promise<void>(res => { resolveHold = res })
+        await route.continue()
+      } else {
+        await route.continue()
+      }
+    })
+
+    await page.getByPlaceholder('Title').fill('Lock Test')
+    await page.getByRole('button', { name: 'Save' }).click()
+
+    // While the action is in-flight, both fields must be disabled
+    await expect(page.getByPlaceholder('Title')).toBeDisabled({ timeout: 3000 })
+    await expect(page.getByPlaceholder('Paste your notes here…')).toBeDisabled({ timeout: 3000 })
+
+    resolveHold()
+  })
+})
+
 // Fix 2 — ChatPanel silent streaming errors
 test.describe('chat panel — error handling', () => {
   test('shows a toast when the chat API returns an error', async ({ page }) => {
