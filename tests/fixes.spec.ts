@@ -25,6 +25,26 @@ test.describe('new note page — save error handling', () => {
   })
 })
 
+// Fix 4 — Long note titles truncate in the list
+test.describe('notes list — title truncation', () => {
+  test('a very long title is truncated to a single line', async ({ page }) => {
+    // Create a note with a very long title
+    await page.goto('/notes/new')
+    const longTitle = 'A'.repeat(300)
+    await page.getByPlaceholder('Title').fill(longTitle)
+    await page.getByRole('button', { name: 'Save' }).click()
+    await page.waitForURL(/\/notes\/[^/]+$/, { timeout: 10000 })
+
+    await page.goto('/notes')
+    const titleEl = page.locator('p.truncate').first()
+    await expect(titleEl).toBeVisible()
+
+    // The rendered height of a truncated single-line element is ≤ 30px
+    const box = await titleEl.boundingBox()
+    expect(box!.height).toBeLessThan(40)
+  })
+})
+
 // Fix 3 — Input/Textarea lock during save
 test.describe('new note page — fields lock during save', () => {
   test('title and body are disabled while saving', async ({ page }) => {
