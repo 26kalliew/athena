@@ -3,6 +3,17 @@
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
+import { toast } from 'sonner'
+import { Button } from '@/components/ui/button'
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from '@/components/ui/dialog'
 import { generateFlashcards, type FlashcardMode } from '@/app/ai/actions'
 
 const MODES: { value: FlashcardMode; label: string }[] = [
@@ -22,59 +33,79 @@ export default function GenerateButton({
   const router = useRouter()
   const [mode, setMode] = useState<FlashcardMode>('standard')
   const [generating, setGenerating] = useState(false)
-  const [error, setError] = useState<string | null>(null)
-
-  if (hasCards) {
-    return (
-      <Link
-        href={`/notes/${noteId}/practice`}
-        className="rounded-lg bg-foreground px-4 py-2 text-sm font-medium text-background hover:opacity-80"
-      >
-        Practice →
-      </Link>
-    )
-  }
+  const [open, setOpen] = useState(false)
 
   async function generate() {
     setGenerating(true)
-    setError(null)
+    setOpen(false)
     try {
       await generateFlashcards(noteId, mode)
       router.push(`/notes/${noteId}/practice`)
     } catch (e) {
-      setError(e instanceof Error ? e.message : 'Failed to generate flashcards')
+      toast.error(e instanceof Error ? e.message : 'Failed to generate flashcards')
       setGenerating(false)
     }
   }
 
-  return (
-    <div className="space-y-3">
-      {error && (
-        <p className="rounded-lg bg-red-50 px-3 py-2 text-sm text-red-700 dark:bg-red-950 dark:text-red-400">
-          {error}
-        </p>
-      )}
+  if (hasCards) {
+    return (
       <div className="flex items-center gap-2">
-        <select
-          value={mode}
-          onChange={e => setMode(e.target.value as FlashcardMode)}
-          disabled={generating}
-          className="rounded-lg border border-zinc-200 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-zinc-300 disabled:opacity-40 dark:border-zinc-700 dark:bg-zinc-900 dark:focus:ring-zinc-600"
-        >
-          {MODES.map(m => (
-            <option key={m.value} value={m.value}>
-              {m.label}
-            </option>
-          ))}
-        </select>
-        <button
-          onClick={generate}
-          disabled={generating}
-          className="rounded-lg bg-foreground px-4 py-2 text-sm font-medium text-background hover:opacity-80 disabled:opacity-40"
-        >
-          {generating ? 'Generating…' : 'Generate flashcards'}
-        </button>
+        <Button asChild>
+          <Link href={`/notes/${noteId}/practice`}>Practice →</Link>
+        </Button>
+        <Dialog open={open} onOpenChange={setOpen}>
+          <DialogTrigger asChild>
+            <Button variant="outline" disabled={generating}>
+              {generating ? 'Regenerating…' : 'Regenerate'}
+            </Button>
+          </DialogTrigger>
+          <DialogContent>
+            <DialogHeader>
+              <DialogTitle>Regenerate flashcards?</DialogTitle>
+              <DialogDescription>
+                This will delete your existing flashcards and generate a new set. Choose a mode:
+              </DialogDescription>
+            </DialogHeader>
+            <select
+              value={mode}
+              onChange={e => setMode(e.target.value as FlashcardMode)}
+              className="rounded-lg border border-zinc-200 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-zinc-300 dark:border-zinc-700 dark:bg-zinc-900 dark:focus:ring-zinc-600"
+            >
+              {MODES.map(m => (
+                <option key={m.value} value={m.value}>
+                  {m.label}
+                </option>
+              ))}
+            </select>
+            <DialogFooter>
+              <Button variant="outline" onClick={() => setOpen(false)}>
+                Cancel
+              </Button>
+              <Button onClick={generate}>Regenerate</Button>
+            </DialogFooter>
+          </DialogContent>
+        </Dialog>
       </div>
+    )
+  }
+
+  return (
+    <div className="flex items-center gap-2">
+      <select
+        value={mode}
+        onChange={e => setMode(e.target.value as FlashcardMode)}
+        disabled={generating}
+        className="rounded-lg border border-zinc-200 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-zinc-300 disabled:opacity-40 dark:border-zinc-700 dark:bg-zinc-900 dark:focus:ring-zinc-600"
+      >
+        {MODES.map(m => (
+          <option key={m.value} value={m.value}>
+            {m.label}
+          </option>
+        ))}
+      </select>
+      <Button onClick={generate} disabled={generating}>
+        {generating ? 'Generating…' : 'Generate flashcards'}
+      </Button>
     </div>
   )
 }

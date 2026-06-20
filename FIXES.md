@@ -8,5 +8,5 @@
 - [x] **6. `src/app/notes/[id]/loading.tsx` (new file) — add a Skeleton loading UI for the note detail page (title, body, generate button area, chat panel) to cover the three-query server load**
 - [x] **7. `src/app/notes/[id]/practice/page.tsx` — call `getNote(id)` and `notFound()` if it returns null, so a direct URL to a non-existent note ID shows a 404 instead of an empty flashcard screen**
 - [x] **8. `src/app/notes/new/page.tsx` — add `maxLength={200}` to the title `<Input>` and a live character counter or `maxLength` cap on the body `<Textarea>` to prevent oversized payloads being sent to Claude**
-- [ ] **9. `src/app/notes/[id]/GenerateButton.tsx` — when `hasCards` is true, show a "Regenerate" option alongside "Practice →" (with a confirmation Dialog) so users can refresh stale flashcards without manually deleting them from the DB**
+- [x] **9. `src/app/notes/[id]/GenerateButton.tsx` — when `hasCards` is true, show a "Regenerate" option alongside "Practice →" (with a confirmation Dialog) so users can refresh stale flashcards without manually deleting them from the DB**
 - [ ] **10. `src/app/error.tsx` (new file) — add a global error boundary that renders a friendly message and a "Go back" link instead of the raw Next.js error page when a server component throws**

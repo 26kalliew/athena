@@ -46,6 +46,30 @@ test.describe('new note page — input caps', () => {
   })
 })
 
+// Fix 9 — Regenerate button with confirmation dialog
+test.describe('generate button — regenerate with confirmation', () => {
+  test('shows Practice and Regenerate when cards exist', async ({ page }) => {
+    await page.goto('/test-fixtures/regenerate-button')
+    await expect(page.getByRole('link', { name: /practice/i })).toBeVisible()
+    await expect(page.getByRole('button', { name: 'Regenerate' })).toBeVisible()
+  })
+
+  test('opens a confirmation dialog on Regenerate click', async ({ page }) => {
+    await page.goto('/test-fixtures/regenerate-button')
+    await page.getByRole('button', { name: 'Regenerate' }).click()
+    await expect(page.getByRole('dialog')).toBeVisible()
+    await expect(page.getByText('Regenerate flashcards?')).toBeVisible()
+  })
+
+  test('closes the dialog on Cancel', async ({ page }) => {
+    await page.goto('/test-fixtures/regenerate-button')
+    await page.getByRole('button', { name: 'Regenerate' }).click()
+    await expect(page.getByRole('dialog')).toBeVisible()
+    await page.getByRole('button', { name: 'Cancel' }).click()
+    await expect(page.getByRole('dialog')).not.toBeVisible()
+  })
+})
+
 // Fix 7 — practice page 404 for unknown note IDs
 test.describe('practice page — unknown note ID', () => {
   test('renders the not-found page for a non-existent note ID', async ({ page }) => {
