@@ -10,7 +10,10 @@
     "db:generate": "drizzle-kit generate",
     "db:migrate": "node --env-file=.env.local node_modules/.bin/drizzle-kit migrate",
     "db:studio": "node --env-file=.env.local node_modules/.bin/drizzle-kit studio",
-    "test:e2e": "playwright test"
+    "test:e2e": "playwright test",
+    "test:unit": "vitest run",
+    "test:integration": "node --env-file=.env.local ./node_modules/.bin/vitest run --config vitest.integration.config.ts",
+    "test": "npm run test:unit && npm run test:integration && npm run test:e2e"
   },
   "dependencies": {
     "@ai-sdk/anthropic": "^3.0.85",
@@ -43,6 +46,8 @@
     "eslint": "^9",
     "eslint-config-next": "16.2.9",
     "tailwindcss": "^4",
-    "typescript": "^5"
+    "typescript": "^5",
+    "vite-tsconfig-paths": "^6.1.1",
+    "vitest": "^4.1.9"
   }
 }
