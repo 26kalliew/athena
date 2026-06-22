@@ -1,6 +1,7 @@
 import { streamText, convertToModelMessages, type UIMessage } from 'ai'
 import { eq } from 'drizzle-orm'
 import { MODEL } from '@/lib/ai'
+import { log } from '@/lib/log'
 import { db } from '@/db'
 import { chatMessages, notes } from '@/db/schema'
 
@@ -29,6 +30,7 @@ export async function POST(request: Request) {
     messages: modelMessages,
     onFinish: async ({ text }) => {
       await db.insert(chatMessages).values({ noteId, role: 'assistant', content: text })
+      log.info('chat turn saved', { noteId, chars: text.length })
     },
   })
 

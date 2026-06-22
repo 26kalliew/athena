@@ -4,6 +4,7 @@ import { z } from 'zod'
 import { eq } from 'drizzle-orm'
 import { generateText } from 'ai'
 import { MODEL } from '@/lib/ai'
+import { log } from '@/lib/log'
 import { db } from '@/db'
 import { chatMessages } from '@/db/schema'
 import { getNote } from '@/app/notes/actions'
@@ -46,7 +47,7 @@ async function callAndParse(noteBody: string, mode: FlashcardMode) {
   })
 
   const { inputTokens, outputTokens } = response.usage
-  console.log(`AI usage — input: ${inputTokens}, output: ${outputTokens}`)
+  log.info('ai usage', { inputTokens, outputTokens })
 
   return FlashcardsSchema.parse(JSON.parse(response.text))
 }
@@ -61,8 +62,12 @@ export async function generateFlashcards(
   let cards
   try {
     cards = await callAndParse(note.body, mode)
-  } catch {
-    // retry once on parse failure
+  } catch (e) {
+    log.error('flashcard generation failed, retrying', {
+      noteId,
+      mode,
+      message: e instanceof Error ? e.message : String(e),
+    })
     cards = await callAndParse(note.body, mode)
   }
 
